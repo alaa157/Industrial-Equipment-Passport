@@ -1,0 +1,27 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: notification-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/passport_notification}
+    username: ${SPRING_DATASOURCE_USERNAME:industrial}
+    password: ${SPRING_DATASOURCE_PASSWORD:industrial_dev_password}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:industrial}
+    password: ${RABBITMQ_PASSWORD:rabbitmq_dev_password}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus

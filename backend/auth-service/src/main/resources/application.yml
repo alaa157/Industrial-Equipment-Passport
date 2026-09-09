@@ -1,0 +1,41 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/passport_auth}
+    username: ${SPRING_DATASOURCE_USERNAME:industrial}
+    password: ${SPRING_DATASOURCE_PASSWORD:industrial_dev_password}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+      password: ${SPRING_DATA_REDIS_PASSWORD:redis_dev_password}
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-expiration-minutes: ${JWT_ACCESS_EXPIRATION_MINUTES:15}
+  refresh-expiration-days: ${JWT_REFRESH_EXPIRATION_DAYS:7}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true

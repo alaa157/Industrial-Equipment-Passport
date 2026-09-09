@@ -1,0 +1,37 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+INSERT INTO users(id,username,email,password_hash,enabled)
+VALUES(
+'20000000-0000-0000-0000-000000000001',
+'omar.tech',
+'omar.tech@industrial.local',
+'$2a$12$0p2g8uZlR2YyJm7z3Yv1uO4Y7qJQv7bR2K2rJ1X6v4S4R4j8HfK6u',
+TRUE
+)
+ON CONFLICT(id) DO NOTHING;
+
+INSERT INTO users(id,username,email,password_hash,enabled)
+VALUES(
+'20000000-0000-0000-0000-000000000002',
+'mina.tech',
+'mina.tech@industrial.local',
+'$2a$12$0p2g8uZlR2YyJm7z3Yv1uO4Y7qJQv7bR2K2rJ1X6v4S4R4j8HfK6u',
+TRUE
+)
+ON CONFLICT(id) DO NOTHING;
+
+INSERT INTO users(id,username,email,password_hash,enabled)
+VALUES(
+'20000000-0000-0000-0000-000000000003',
+'inspector',
+'inspector@industrial.local',
+'$2a$12$0p2g8uZlR2YyJm7z3Yv1uO4Y7qJQv7bR2K2rJ1X6v4S4R4j8HfK6u',
+TRUE
+)
+ON CONFLICT(id) DO NOTHING;
+
+INSERT INTO user_roles(user_id,role) VALUES
+('20000000-0000-0000-0000-000000000001','TECHNICIAN'),
+('20000000-0000-0000-0000-000000000002','TECHNICIAN'),
+('20000000-0000-0000-0000-000000000003','INSPECTOR')
+ON CONFLICT DO NOTHING;

@@ -1,0 +1,68 @@
+services:
+
+  auth-service:
+    build: ./backend/auth-service
+    network_mode: host
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      FILE_STORAGE_PATH: ${FILE_STORAGE_PATH}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_dev_password}
+      RABBITMQ_USER: ${RABBITMQ_USER:-industrial}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-rabbitmq_dev_password}
+
+  equipment-service:
+    build: ./backend/equipment-service
+    network_mode: host
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      FILE_STORAGE_PATH: ${FILE_STORAGE_PATH}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      RABBITMQ_USER: ${RABBITMQ_USER:-industrial}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-rabbitmq_dev_password}
+    volumes:
+      - ./storage:/app/storage
+
+  maintenance-service:
+    build: ./backend/maintenance-service
+    network_mode: host
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      FILE_STORAGE_PATH: ${FILE_STORAGE_PATH}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      RABBITMQ_USER: ${RABBITMQ_USER:-industrial}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-rabbitmq_dev_password}
+    volumes:
+      - ./storage:/app/storage
+
+  notification-service:
+    build: ./backend/notification-service
+    network_mode: host
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_dev_password}
+      RABBITMQ_USER: ${RABBITMQ_USER:-industrial}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-rabbitmq_dev_password}
+
+  audit-service:
+    build: ./backend/audit-service
+    network_mode: host
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      RABBITMQ_USER: ${RABBITMQ_USER:-industrial}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-rabbitmq_dev_password}
+
+  api-gateway:
+    build: ./backend/api-gateway
+    network_mode: host
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+
+  frontend:
+    build: ./frontend
+    network_mode: host
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
