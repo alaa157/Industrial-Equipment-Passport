@@ -88,7 +88,7 @@ Phase 4 work.
 
 ### Phase 4 — Infrastructure and persistence
 
-**Status: planned**
+**Status: complete**
 
 - Add PostgreSQL 17 with initialization for all five databases.
 - Add Redis and RabbitMQ with credentials, healthchecks, and persistent
@@ -96,6 +96,13 @@ Phase 4 work.
 - Add Prometheus and Grafana with service-name scrape targets, datasource
   provisioning, dashboards, and persistent state.
 - Add named attachment storage and document backup boundaries.
+
+The production Compose file now provisions PostgreSQL, Redis, RabbitMQ,
+Prometheus, and Grafana with persistent named volumes, healthchecks, and
+health-gated application startup. PostgreSQL initialization creates all five
+service databases, RabbitMQ loads the repository definitions, and Grafana is
+provisioned against the Compose Prometheus service. Migration orchestration and
+production environment rejection remain Phase 5 work.
 
 ### Phase 5 — Migration, seed, and environment control
 
