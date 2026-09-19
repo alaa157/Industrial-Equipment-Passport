@@ -106,13 +106,22 @@ production environment rejection remain Phase 5 work.
 
 ### Phase 5 — Migration, seed, and environment control
 
-**Status: planned**
+**Status: complete**
 
 - Add an explicit one-shot migration/bootstrap service or command.
 - Keep Flyway migrations forward-only and gate application startup on success.
 - Separate development seed behavior from production initialization.
 - Validate missing, weak, and default credentials.
 - Validate URLs, CORS origins, storage paths, and deployment environment.
+
+Phase 5 adds explicit one-shot migration services for each Flyway-backed
+database. Application services wait for their corresponding migration job to
+complete successfully and then start with Flyway disabled. Development-only
+seed migrations are isolated under `db/migration/dev` and enabled through the
+development `FLYWAY_LOCATIONS` setting; production uses only the base
+migrations and does not activate the development admin seeder. The deployment
+environment validation script rejects missing values, weak production
+credentials, invalid API URLs, and non-absolute storage paths.
 
 ### Phase 6 — Delivery, operations, and rollback
 

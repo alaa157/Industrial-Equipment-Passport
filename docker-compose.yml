@@ -12,6 +12,8 @@ services:
       SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD}
       RABBITMQ_USER: ${RABBITMQ_USER:-industrial}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      SPRING_FLYWAY_ENABLED: "false"
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-production}
     depends_on:
       postgres:
         condition: service_healthy
@@ -19,6 +21,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      migration-auth:
+        condition: service_completed_successfully
 
   equipment-service:
     build: ./backend/equipment-service
@@ -32,6 +36,7 @@ services:
       RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
       RABBITMQ_USER: ${RABBITMQ_USER:-industrial}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      SPRING_FLYWAY_ENABLED: "false"
     volumes:
       - ./storage:/app/storage
     depends_on:
@@ -39,6 +44,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      migration-equipment:
+        condition: service_completed_successfully
 
   maintenance-service:
     build: ./backend/maintenance-service
@@ -52,6 +59,7 @@ services:
       RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
       RABBITMQ_USER: ${RABBITMQ_USER:-industrial}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      SPRING_FLYWAY_ENABLED: "false"
     volumes:
       - ./storage:/app/storage
     depends_on:
@@ -59,6 +67,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      migration-maintenance:
+        condition: service_completed_successfully
 
   notification-service:
     build: ./backend/notification-service
@@ -71,11 +81,14 @@ services:
       RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
       RABBITMQ_USER: ${RABBITMQ_USER:-industrial}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      SPRING_FLYWAY_ENABLED: "false"
     depends_on:
       postgres:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      migration-notification:
+        condition: service_completed_successfully
 
   audit-service:
     build: ./backend/audit-service
@@ -88,11 +101,14 @@ services:
       RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
       RABBITMQ_USER: ${RABBITMQ_USER:-industrial}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      SPRING_FLYWAY_ENABLED: "false"
     depends_on:
       postgres:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      migration-audit:
+        condition: service_completed_successfully
 
   api-gateway:
     build: ./backend/api-gateway
@@ -129,6 +145,114 @@ services:
         condition: service_healthy
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
+
+  migration-auth:
+    build: ./backend/auth-service
+    restart: "no"
+    environment:
+      SPRING_MAIN_WEB_APPLICATION_TYPE: none
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-production}
+      FLYWAY_LOCATIONS: ${FLYWAY_LOCATIONS:-classpath:db/migration}
+      SPRING_DATASOURCE_URL: ${AUTH_DATASOURCE_URL:-jdbc:postgresql://postgres:5432/passport_auth}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-industrial}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_DATA_REDIS_HOST: ${REDIS_HOST:-redis}
+      SPRING_DATA_REDIS_PORT: ${REDIS_PORT:-6379}
+      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD}
+      RABBITMQ_USER: ${RABBITMQ_USER:-industrial}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  migration-equipment:
+    build: ./backend/equipment-service
+    restart: "no"
+    environment:
+      SPRING_MAIN_WEB_APPLICATION_TYPE: none
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-production}
+      FLYWAY_LOCATIONS: ${FLYWAY_LOCATIONS:-classpath:db/migration}
+      SPRING_DATASOURCE_URL: ${EQUIPMENT_DATASOURCE_URL:-jdbc:postgresql://postgres:5432/passport_equipment}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-industrial}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      RABBITMQ_HOST: ${RABBITMQ_HOST:-rabbitmq}
+      RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
+      RABBITMQ_USER: ${RABBITMQ_USER:-industrial}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  migration-maintenance:
+    build: ./backend/maintenance-service
+    restart: "no"
+    environment:
+      SPRING_MAIN_WEB_APPLICATION_TYPE: none
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-production}
+      FLYWAY_LOCATIONS: ${FLYWAY_LOCATIONS:-classpath:db/migration}
+      SPRING_DATASOURCE_URL: ${MAINTENANCE_DATASOURCE_URL:-jdbc:postgresql://postgres:5432/passport_maintenance}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-industrial}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      RABBITMQ_HOST: ${RABBITMQ_HOST:-rabbitmq}
+      RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
+      RABBITMQ_USER: ${RABBITMQ_USER:-industrial}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  migration-notification:
+    build: ./backend/notification-service
+    restart: "no"
+    environment:
+      SPRING_MAIN_WEB_APPLICATION_TYPE: none
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-production}
+      FLYWAY_LOCATIONS: ${FLYWAY_LOCATIONS:-classpath:db/migration}
+      SPRING_DATASOURCE_URL: ${NOTIFICATION_DATASOURCE_URL:-jdbc:postgresql://postgres:5432/passport_notification}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-industrial}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      RABBITMQ_HOST: ${RABBITMQ_HOST:-rabbitmq}
+      RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
+      RABBITMQ_USER: ${RABBITMQ_USER:-industrial}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  migration-audit:
+    build: ./backend/audit-service
+    restart: "no"
+    environment:
+      SPRING_MAIN_WEB_APPLICATION_TYPE: none
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-production}
+      FLYWAY_LOCATIONS: ${FLYWAY_LOCATIONS:-classpath:db/migration}
+      SPRING_DATASOURCE_URL: ${AUDIT_DATASOURCE_URL:-jdbc:postgresql://postgres:5432/passport_audit}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-industrial}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      RABBITMQ_HOST: ${RABBITMQ_HOST:-rabbitmq}
+      RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
+      RABBITMQ_USER: ${RABBITMQ_USER:-industrial}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
   postgres:
     image: postgres:17-alpine

@@ -18,7 +18,8 @@ spring:
         jdbc:
           time_zone: UTC
   flyway:
-    enabled: true
+    enabled: ${SPRING_FLYWAY_ENABLED:true}
+    locations: ${FLYWAY_LOCATIONS:classpath:db/migration}
     baseline-on-migrate: true
   data:
     redis:

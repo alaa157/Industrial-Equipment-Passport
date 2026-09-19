@@ -17,7 +17,8 @@ spring:
       hibernate:
         jdbc.time_zone: UTC
   flyway:
-    enabled: true
+    enabled: ${SPRING_FLYWAY_ENABLED:true}
+    locations: ${FLYWAY_LOCATIONS:classpath:db/migration}
   rabbitmq:
     host: ${RABBITMQ_HOST:localhost}
     port: ${RABBITMQ_PORT:5672}
