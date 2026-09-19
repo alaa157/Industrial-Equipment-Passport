@@ -6,10 +6,13 @@ RUN mvn -B -DskipTests package
 
 FROM eclipse-temurin:21-jre-jammy AS runtime
 WORKDIR /app
+ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75 -XX:InitialRAMPercentage=25 -Djava.security.egd=file:/dev/./urandom"
 RUN apt-get update \
     && apt-get install --no-install-recommends -y curl \
     && rm -rf /var/lib/apt/lists/* \
-    && useradd --system --uid 1001 --create-home appuser
+    && useradd --system --uid 1001 --create-home appuser \
+    && mkdir -p /app/storage \
+    && chown -R appuser:appuser /app
 COPY --from=build /app/target/*.jar app.jar
 USER appuser
 EXPOSE 8082

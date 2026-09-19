@@ -44,7 +44,7 @@ Artifacts:
 
 ### Phase 1 — Reproducible image builds
 
-**Status: planned**
+**Status: complete**
 
 - Replace backend `COPY target/*.jar` Dockerfiles with multi-stage Maven builds.
 - Build the frontend dependencies and Next.js output inside the image.
@@ -54,13 +54,19 @@ Artifacts:
 
 ### Phase 2 — Runtime hardening and health
 
-**Status: planned**
+**Status: complete**
 
 - Add container healthchecks for Actuator endpoints and frontend readiness.
 - Add JVM/container memory settings appropriate for a single VM.
 - Make service startup failures explicit and observable.
 - Ensure attachment directories are writable only by the application user.
 - Validate non-root runtime behavior.
+
+Phase 1 Java images now include Actuator healthchecks, non-root users, and
+bounded JVM memory defaults. Phase 2 adds an HTTP readiness check to the
+frontend, explicitly binds Spring services to all container interfaces, and
+keeps the runtime contract compatible with the bridge-network Compose work in
+Phase 3.
 
 ### Phase 3 — Compose network and service discovery
 
@@ -132,4 +138,3 @@ The most important baseline risks are:
 
 Phase 1 should address image reproducibility first; later phases depend on
 being able to build and run the complete stack from a clean checkout.
-
