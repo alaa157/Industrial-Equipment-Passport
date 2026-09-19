@@ -70,7 +70,7 @@ Phase 3.
 
 ### Phase 3 — Compose network and service discovery
 
-**Status: planned**
+**Status: complete**
 
 - Remove `network_mode: host` from the production Compose topology.
 - Add the internal bridge network.
@@ -78,6 +78,13 @@ Phase 3.
   targets using Docker DNS names.
 - Add health-gated `depends_on` relationships.
 - Keep any host-network workaround in a separate local-only override.
+
+The production Compose file now uses a named internal bridge network, exposes
+only the frontend and gateway, and injects Docker-DNS service names for
+gateway, PostgreSQL, Redis, and RabbitMQ endpoints. Prometheus targets sibling
+containers by service name rather than targeting its own container through
+`localhost`. Infrastructure services and health-gated startup ordering remain
+Phase 4 work.
 
 ### Phase 4 — Infrastructure and persistence
 
